@@ -2,6 +2,7 @@ const { Server } = require('socket.io')
 const express = require('express')
 const http = require('http')
 const cors = require('cors')
+const registerSocket = require("./socketHandlers")
 
 const app = express()
 app.use(cors())
@@ -14,12 +15,15 @@ const io = new Server(server, {
     }
 })
 
+
 io.on("connection", (socket) => {
     console.log("Connected at client: ", socket.id)
 
     socket.on("disconnect", () => {
         console.log("Disconnected from client". socket.id)
     })
+
+    registerSocket(io, socket)
 })
 
 server.listen(3000, () => {
