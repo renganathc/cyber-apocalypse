@@ -10,7 +10,11 @@ function registerSocket(io, socket) {
 
     })
 
-    socket.on("join_room", ({ roomCode }) => {
+    socket.on("join_room", ({ roomCode, player_name }) => {
+
+        rooms.joinRoom(roomCode, socket.id, player_name)
+        socket.join(roomCode)
+        io.to(roomCode).emit("room_update", rooms.getPlayers(roomCode))
         
     })
 }

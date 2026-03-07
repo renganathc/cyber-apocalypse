@@ -20,7 +20,7 @@ io.on("connection", (socket) => {
     console.log("Connected at client: ", socket.id)
 
     socket.on("disconnect", () => {
-        console.log("Disconnected from client". socket.id)
+        console.log("Disconnected from client", socket.id)
     })
 
     registerSocket(io, socket)
