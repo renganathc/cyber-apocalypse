@@ -79,4 +79,4 @@ function getPlayers(code) {
     return rooms[code]
 }
 
-module.exports = { createRoom, joinRoom, getPlayers, removePlayer, destroyRoom }
+module.exports = { createRoom, joinRoom, getPlayers, removePlayer, updatePlayerStatus, destroyRoom }

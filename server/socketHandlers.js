@@ -12,11 +12,30 @@ function registerSocket(io, socket) {
 
     socket.on("join_room", ({ roomCode, player_name, player_id }) => {
 
-        rooms.joinRoom(roomCode, player_id, player_name)
-        socket.join(roomCode)
-        io.to(roomCode).emit("room_update", rooms.getPlayers(roomCode))
+        const status = rooms.joinRoom(roomCode, player_id, player_name, socket.id)
+        if (status === "joined") {
+            socket.join(roomCode)
+            io.to(roomCode).emit("room_update", rooms.getPlayers(roomCode))
+        } else {
+            io.to(socket.id).emit("room_not_found")
+        }
         
     })
 }
 
-module.exports = registerSocket
+function deregisterSocket(io, socket_id) {
+    console.log("Disconnected from client", socket_id)
+    const destroyed_room_code = rooms.destroyRoom(socket_id)
+    if (destroyed_room_code !== undefined) {
+        io.to(destroyed_room_code).emit("room_destroyed")
+        return
+    }
+    const result = rooms.removePlayer(socket_id)
+    if (result !== undefined) {
+        const { removed_player_id, roomCode } = result
+        io.to(roomCode).emit("room_update", rooms.getPlayers(roomCode))
+        return
+    }
+}
+
+module.exports = { registerSocket, deregisterSocket }
