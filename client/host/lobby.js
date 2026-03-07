@@ -19,4 +19,5 @@ socket.on("room_created", (data) => {
 
 socket.on("room_update", (room_data) => {
   console.log("players in room...\n", room_data)
+  document.getElementById("players").textContent = JSON.stringify(room_data)
 })

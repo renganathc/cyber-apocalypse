@@ -13,8 +13,7 @@ socket.on("connect", () => {
 
     if (!code || !name || !client_id) {
       alert("An error ocured. Try again")
-      window.location.replace = '../index.html'
-      return
+      window.location.replace('../index.html')
     }
 
     socket.emit("join_room", {
@@ -31,4 +30,14 @@ socket.on("disconnect", () => {
 socket.on("room_update", (room_data) => {
   console.log("players in room...\n", room_data)
   document.getElementById("players").textContent = JSON.stringify(room_data)
+})
+
+socket.on("room_not_found", () => {
+  alert("No room with the entered code exists")
+  window.location.replace('../index.html')
+})
+
+socket.on("room_destroyed", () => {
+  alert("Host disconnected. Room destroyed")
+  window.location.replace('../index.html')
 })

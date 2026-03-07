@@ -24,7 +24,7 @@ function createRoom(host_id) {
     return code
 }
 
-function joinRoom(room_code, player_id, player_name, socket_id) {
+function joinRoom(io, room_code, player_id, player_name, socket_id) {
     const player_info = {
         name: player_name,
         socketId : socket_id,
@@ -32,6 +32,10 @@ function joinRoom(room_code, player_id, player_name, socket_id) {
         status: 'active'
     }
     if (room_code in rooms) {
+        if (player_id in rooms[room_code].players) {
+            const sID = rooms[room_code].players[player_id].socketId
+            io.sockets.sockets.get(sID).disconnect(true)
+        }
         console.log("Player " + player_id + " joined room " + room_code)
         rooms[room_code].players[player_id] = player_info
         return "joined"

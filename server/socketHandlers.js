@@ -7,12 +7,13 @@ function registerSocket(io, socket) {
         const code = rooms.createRoom(host_id)
         socket.join(code)
         socket.emit("room_created", { roomCode: code })
+        socket.emit("room_update", rooms.getPlayers(code))
 
     })
 
     socket.on("join_room", ({ roomCode, player_name, player_id }) => {
 
-        const status = rooms.joinRoom(roomCode, player_id, player_name, socket.id)
+        const status = rooms.joinRoom(io, roomCode, player_id, player_name, socket.id)
         if (status === "joined") {
             socket.join(roomCode)
             io.to(roomCode).emit("room_update", rooms.getPlayers(roomCode))
