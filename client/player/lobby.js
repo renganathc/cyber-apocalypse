@@ -7,10 +7,11 @@ socket.on("connect", () => {
 
     const code = sessionStorage.getItem("roomCode");
     const name = sessionStorage.getItem("player_name");
+    const client_id = localStorage.getItem("client_id");
 
-    console.log(code, name)
+    console.log(code, name, client_id)
 
-    if (!code || !name) {
+    if (!code || !name || !client_id) {
       alert("An error ocured. Try again")
       window.location.replace = '../index.html'
       return
@@ -18,7 +19,8 @@ socket.on("connect", () => {
 
     socket.emit("join_room", {
       roomCode: code,
-      player_name: name
+      player_name: name,
+      player_id: client_id
     })
 })
 

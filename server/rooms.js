@@ -1,6 +1,4 @@
-rooms = {
-
-}
+rooms = {}
 
 function generateCode() {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -18,22 +16,22 @@ function createRoom(host_id) {
 
     rooms[code] = {
         host: host_id,
-        players: []
+        players: {}
     }
 
     return code
 }
 
 function joinRoom(room_code, player_id, player_name) {
-    player_info = {
-        playerID: player_id,
-        playerName: player_name
+    const player_info = {
+        name: player_name,
+        role: 'survivor'
     }
-    rooms[room_code].players.push(player_info)
+    rooms[room_code].players[player_id] = player_info
 }
 
 function getPlayers(code) {
-    return rooms[code].players
+    return rooms[code]
 }
 
 module.exports = { createRoom, joinRoom, getPlayers }

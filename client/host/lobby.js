@@ -4,7 +4,17 @@ const socket = io("http://localhost:3000")
 
 socket.on("connect", () => {
     console.log("Connected at server: ", socket.id)
-    socket.emit("create_room")
+
+    const client_id = localStorage.getItem("client_id");
+    console.log(client_id)
+
+    if (!client_id) {
+      alert("An error ocured. Try again")
+      window.location.replace = '../index.html'
+      return
+    }
+
+    socket.emit("create_room", {host_id: client_id})
 })
 
 socket.on("disconnect", () => {
