@@ -4,6 +4,22 @@ const socket = io("http://localhost:3000")
 
 socket.on("connect", () => {
     console.log("Connected at server: ", socket.id)
+
+    const code = sessionStorage.getItem("roomCode");
+    const name = sessionStorage.getItem("player_name");
+
+    console.log(code, name)
+
+    if (!code || !name) {
+      alert("An error ocured. Try again")
+      window.location.replace = '../index.html'
+      return
+    }
+
+    socket.emit("join_room", {
+      roomCode: code,
+      player_name: name
+    })
 })
 
 socket.on("disconnect", () => {
@@ -14,26 +30,3 @@ socket.on("room_update", (room_data) => {
   console.log("players in room...\n", room_data)
   document.getElementById("players").textContent = JSON.stringify(room_data)
 })
-
-
-
-document.getElementById("join_btn").onclick = () => {
-
-  const code = document.getElementById("room_code_input").value.trim()
-  const name = document.getElementById("player_name_input").value.trim()
-
-  if (!code) {
-    alert("Room code cannot be empty")
-    return
-  }
-
-  if (!name) {
-    alert("Name cannot be empty")
-    return
-  }
-
-  socket.emit("join_room", {
-    roomCode: code,
-    player_name: name
-  })
-}

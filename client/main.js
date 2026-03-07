@@ -3,5 +3,20 @@ document.getElementById("createRoom").onclick = () => {
 }
 
 document.getElementById("joinRoom").onclick = () => {
-  window.location.href = "./player/lobby.html"
+  let code = prompt("Enter room code")
+  if (code === null || code.trim() === "") {
+    alert("Room code cannot be empty")
+    return
+  }
+
+  let name = prompt("Enter your name")
+  if (name === null || name.trim() === "") {
+    alert("Name cannot be empty")
+    return
+  }
+
+  sessionStorage.setItem("roomCode", code.trim());
+  sessionStorage.setItem("player_name", name.trim());
+
+  window.location.href = "./player/lobby.html";
 }
