@@ -19,19 +19,64 @@ function createRoom(host_id) {
         players: {}
     }
 
+    console.log("room " + code + " created")
+
     return code
 }
 
-function joinRoom(room_code, player_id, player_name) {
+function joinRoom(room_code, player_id, player_name, socket_id) {
     const player_info = {
         name: player_name,
-        role: 'survivor'
+        socketId : socket_id,
+        role: 'survivor',
+        status: 'active'
     }
-    rooms[room_code].players[player_id] = player_info
+    if (room_code in rooms) {
+        console.log("Player " + player_id + " joined room " + room_code)
+        rooms[room_code].players[player_id] = player_info
+        return "joined"
+    } else {
+        console.log("Player " + player_id + " tried to join a room that does not exist")
+        return "not_found"
+    }
+}
+
+function removePlayer(socket_id) {
+    for (let roomCode in rooms) {
+        for (let player_id in rooms[roomCode].players) {
+            if (rooms[roomCode].players[player_id].socketId === socket_id) {
+                console.log("Player " + player_id + " removed")
+                delete rooms[roomCode].players[player_id]
+                return { player_id, roomCode }
+            }
+        }
+    }
+}
+
+function updatePlayerStatus(socket_id, status) {
+    for (let roomCode in rooms) {
+        for (let player_id in rooms[roomCode].players) {
+            if (rooms[roomCode].players[player_id].socketId === socket_id) {
+                rooms[roomCode].players[player_id].status = status
+            }
+        }
+    }
+}
+
+function destroyRoom(socket_id) {
+    for (let roomCode in rooms) {
+
+        if (rooms[roomCode].host === socket_id) {
+            console.log("Room " + roomCode + " destroyed")
+            delete rooms[roomCode]
+            return roomCode
+        }
+
+    }
 }
 
 function getPlayers(code) {
     return rooms[code]
 }
 
-module.exports = { createRoom, joinRoom, getPlayers }
+module.exports = { createRoom, joinRoom, getPlayers, removePlayer, destroyRoom }
