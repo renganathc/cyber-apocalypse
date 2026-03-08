@@ -82,6 +82,15 @@ function registerSocket(io, socket) {
             }, 2000)
         }
     })
+
+    socket.on("player_input", ({ roomCode, playerId, inputX, inputY }) => {
+        if (roomCode in room.rooms) {
+            if (playerId in room.rooms[roomCode].players) {
+                room.rooms[roomCode].players[playerId].inputX = inputX
+                room.rooms[roomCode].players[playerId].inputY = inputY
+            }
+        }
+    })
 }
 
 function deregisterSocket(io, socket_id) {
