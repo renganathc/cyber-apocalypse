@@ -16,6 +16,7 @@ function createRoom(host_id) {
 
     rooms[code] = {
         host: host_id,
+        zone: 'lobby',
         players: {}
     }
 
@@ -83,4 +84,4 @@ function getPlayers(code) {
     return rooms[code]
 }
 
-module.exports = { createRoom, joinRoom, getPlayers, removePlayer, updatePlayerStatus, destroyRoom }
+module.exports = { rooms, createRoom, joinRoom, getPlayers, removePlayer, updatePlayerStatus, destroyRoom }

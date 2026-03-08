@@ -1,4 +1,5 @@
 const rooms = require('./rooms')
+const game = require('/game')
 
 function registerSocket(io, socket) {
 
@@ -21,6 +22,34 @@ function registerSocket(io, socket) {
             io.to(socket.id).emit("room_not_found")
         }
         
+    })
+
+    socket.on("request_start_game", ({ room_code }) => {
+
+        if (!(room_code in rooms)) return
+        if (rooms[room_code].zone !== "lobby") return
+
+        const result = game.switchZone(room_code, "message")
+        if (result === "success") {
+            const player_id = game.setPatientZero(room_code)
+            if (player_id === undefined) {
+                game.switchZone(room_code, "lobby")
+                return
+            }
+            io.to(room_code).emit("message_mode", {tag: "patient-zero", info: player_id})
+            console.log("Room " + room_code + " started game")
+
+            setTimeout(() => {
+                if (!(room_code in rooms)) return
+                const result = game.switchZone(room_code, "game")
+                if (result === "success") {
+                    io.to(room_code).emit("game_mode")
+                } else {
+                    game.switchZone(room_code, "lobby")
+                    io.to(room_code).emit("lobby_mode")
+                }
+            }, 2000)
+        }
     })
 }
 
