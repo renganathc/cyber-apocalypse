@@ -42,8 +42,6 @@ function joinRoom(io, room_code, player_id, player_name, socket_id) {
     }
     if (room_code in rooms) {
 
-        console.log(rooms[room_code].zone)
-        
         if (rooms[room_code].zone === "game" || rooms[room_code].zone === "message") {
             if (player_id in rooms[room_code].players) {
                 const sID = rooms[room_code].players[player_id].socketId
@@ -51,15 +49,14 @@ function joinRoom(io, room_code, player_id, player_name, socket_id) {
                 if (sock) {
                     sock.disconnect(true)
                 }
-                rooms[room_code].players[player_id] = player_info
+                rooms[room_code].players[player_id].socketId = socket_id
+                rooms[room_code].players[player_id].name = player_name
                 console.log("Player " + player_id + " rejoined room " + room_code)
                 return "rejoined"
             } else {
                 return "game-ongoing"
             }
-        }
-        
-        else {
+        } else if (rooms[room_code].zone === "lobby") {
             if (player_id in rooms[room_code].players) {
                 const sID = rooms[room_code].players[player_id].socketId
                 const sock = io.sockets.sockets.get(sID)
@@ -70,6 +67,8 @@ function joinRoom(io, room_code, player_id, player_name, socket_id) {
             rooms[room_code].players[player_id] = player_info
             console.log("Player " + player_id + " joined room " + room_code)
             return "joined"
+        } else {
+            return "not-found"
         }
 
     } else {

@@ -20,7 +20,7 @@ document.getElementById("joinRoom").onclick = () => {
     localStorage.setItem("client_id", client_id);
   }
 
-  sessionStorage.setItem("roomCode", code.trim());
+  sessionStorage.setItem("roomCode", code.trim().toUpperCase());
   sessionStorage.setItem("player_name", name.trim());
 
   window.location.href = "./player/lobby.html";

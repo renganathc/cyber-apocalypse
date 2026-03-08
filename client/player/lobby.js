@@ -45,6 +45,11 @@ socket.on("room_not_found", () => {
   window.location.replace('../index.html')
 })
 
+socket.on("game_ongoing", () => {
+  alert("Players in the room are currently in a game. Cannot join room")
+  window.location.replace('../index.html')
+})
+
 socket.on("room_destroyed", () => {
   alert("Host disconnected. Room destroyed")
   window.location.replace('../index.html')
