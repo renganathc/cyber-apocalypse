@@ -1,13 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Host Lobby</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Host Lobby</title>
+
+<style>
+    body{
+        margin:0;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .screen{
+        display:none;
+        width:100vw;
+        height:100vh;
+    }
+
+    .active{
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+    }
+
+    #message_text{
+        font-size:40px;
+        font-weight:bold;
+        text-align:center;
+    }
+</style>
+
 </head>
 <body>
+
+<div id="lobby_screen" class="screen active">
     <h2 id="room_code">Room Code: ------</h2>
     <p id="players">Players: ------</p>
-    <script type="module" src="./lobby.js"></script>
+    <button id="start_game">Start Game</button>
+</div>
+
+
+<div id="message_screen" class="screen">
+    <div id="message_text">Waiting...</div>
+    <div id="message_sub_text">Waiting...</div>
+</div>
+
+
+<div id="game_screen" class="screen">
+
+</div>
+
+
+<script type="module" src="./lobby.js"></script>
 </body>
 </html>

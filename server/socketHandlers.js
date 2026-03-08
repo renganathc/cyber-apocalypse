@@ -1,51 +1,81 @@
-const rooms = require('./rooms')
-const game = require('/game')
+const room = require('./room')
+const game = require('./game')
 
 function registerSocket(io, socket) {
 
     socket.on("create_room", ({ host_id }) => {
 
-        const code = rooms.createRoom(host_id)
+        const code = room.createRoom(host_id)
         socket.join(code)
         socket.emit("room_created", { roomCode: code })
-        socket.emit("room_update", rooms.getPlayers(code))
+        socket.emit("room_update", room.getPlayers(code))
 
     })
 
     socket.on("join_room", ({ roomCode, player_name, player_id }) => {
 
-        const status = rooms.joinRoom(io, roomCode, player_id, player_name, socket.id)
+        const status = room.joinRoom(io, roomCode, player_id, player_name, socket.id)
         if (status === "joined") {
             socket.join(roomCode)
-            io.to(roomCode).emit("room_update", rooms.getPlayers(roomCode))
+            io.to(roomCode).emit("room_update", room.getPlayers(roomCode))
         } else {
             io.to(socket.id).emit("room_not_found")
         }
         
     })
 
-    socket.on("request_start_game", ({ room_code }) => {
+    socket.on("request_game_start", (data) => {
 
-        if (!(room_code in rooms)) return
-        if (rooms[room_code].zone !== "lobby") return
+        const room_code = data.roomCode
+
+        if (!(room_code in room.rooms)) return
+        if (room.rooms[room_code].zone !== 'lobby') return
 
         const result = game.switchZone(room_code, "message")
         if (result === "success") {
-            const player_id = game.setPatientZero(room_code)
-            if (player_id === undefined) {
+            const patient_zero_info = game.setPatientZero(room_code)
+            if (patient_zero_info === undefined) {
                 game.switchZone(room_code, "lobby")
                 return
             }
-            io.to(room_code).emit("message_mode", {tag: "patient-zero", info: player_id})
-            console.log("Room " + room_code + " started game")
+            const { player_name, survivors } = patient_zero_info
+            io.to(room_code).emit("message_mode", {tag: "patient-zero", info: {name: player_name, survivors}})
+            console.log("Room " + room_code + " starting game")
 
             setTimeout(() => {
-                if (!(room_code in rooms)) return
+                if (!(room_code in room.rooms)) return
                 const result = game.switchZone(room_code, "game")
                 if (result === "success") {
                     io.to(room_code).emit("game_mode")
+                    console.log("Room " + room_code + " started game successfully")
+
+
+                    const TICK_RATE = 50
+                    const interval = setInterval(() => {
+                        if (!(room_code in room.rooms)) {
+                            clearInterval(interval)
+                            return
+                        }
+                        const state = game.updateState(room_code)
+                        if (!state) {
+                            console.log("Room " + room_code + " encountered an issue while game was running. Redirecting room to lobby")
+                            // io.to(room_code).emit("lobby_mode")
+                            clearInterval(interval)
+                            return
+                        }
+                        if (state.timeLeft === 0) {
+                            game.switchZone(room_code, "game_over")
+                            clearInterval(interval)
+                            return
+                        } else {
+                            io.to(room_code).emit("game_state", state)
+                        }
+                    }, TICK_RATE)
+
+
                 } else {
                     game.switchZone(room_code, "lobby")
+                    console.log("Room " + room_code + " encountered an issue while starting game. Redirecting room to lobby")
                     io.to(room_code).emit("lobby_mode")
                 }
             }, 2000)
@@ -55,15 +85,15 @@ function registerSocket(io, socket) {
 
 function deregisterSocket(io, socket_id) {
     console.log("Disconnected from client", socket_id)
-    const destroyed_room_code = rooms.destroyRoom(socket_id)
+    const destroyed_room_code = room.destroyRoom(socket_id)
     if (destroyed_room_code !== undefined) {
         io.to(destroyed_room_code).emit("room_destroyed")
         return
     }
-    const result = rooms.removePlayer(socket_id)
+    const result = room.removePlayer(socket_id)
     if (result !== undefined) {
         const { removed_player_id, roomCode } = result
-        io.to(roomCode).emit("room_update", rooms.getPlayers(roomCode))
+        io.to(roomCode).emit("room_update", room.getPlayers(roomCode))
         return
     }
 }

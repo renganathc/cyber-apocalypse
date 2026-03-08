@@ -1,4 +1,4 @@
-const { rooms } = require('./rooms')
+const { rooms } = require('./room')
 
 function switchZone(room_code, zone) {
     if (room_code in rooms) {
@@ -18,9 +18,34 @@ function setPatientZero(room_code) {
         }
         const randomIndex = Math.floor(Math.random() * playerIds.length)
         const randomPlayerId = playerIds[randomIndex]
-        players[randomPlayerId].status = "carrier"
-        return randomPlayerId
+        players[randomPlayerId].role = "carrier"
+        return { player_name: players[randomPlayerId].name, survivors: playerIds.length }
     }
 }
 
-module.exports = { switchZone, setPatientZero }
+function updateState(room_code) {
+    if (room_code in rooms) {
+        console.log(rooms[room_code].timeLeft)
+        let state = {
+            timeLeft: rooms[room_code].timeLeft,
+            players: {}
+        }
+        for (let playerId in rooms[room_code].players) {
+            const { name, x, y, role } = rooms[room_code].players[playerId]
+            state.players[playerId] = {
+                name,
+                x,
+                y,
+                role
+            }
+        }
+        rooms[room_code].frame++
+        if (rooms[room_code].frame === 20) {
+            rooms[room_code].timeLeft--
+            rooms[room_code].frame = 0
+        }
+        return state
+    }
+}
+
+module.exports = { switchZone, setPatientZero, updateState }

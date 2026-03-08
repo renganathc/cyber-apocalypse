@@ -17,7 +17,9 @@ function createRoom(host_id) {
     rooms[code] = {
         host: host_id,
         zone: 'lobby',
-        players: {}
+        players: {},
+        timeLeft: 120,
+        frame: 0
     }
 
     console.log("room " + code + " created")
@@ -29,6 +31,8 @@ function joinRoom(io, room_code, player_id, player_name, socket_id) {
     const player_info = {
         name: player_name,
         socketId : socket_id,
+        x: Math.floor(Math.random() * 1920),
+        y: Math.floor(Math.random() * 1080),
         role: 'survivor',
         status: 'active'
     }
