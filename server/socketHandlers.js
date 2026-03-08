@@ -69,6 +69,7 @@ function registerSocket(io, socket) {
                             return
                         } else {
                             io.to(room_code).emit("game_state", state)
+                            // need to modify later to send only to host
                         }
                     }, TICK_RATE)
 

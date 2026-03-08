@@ -33,6 +33,10 @@ function joinRoom(io, room_code, player_id, player_name, socket_id) {
         socketId : socket_id,
         x: Math.floor(Math.random() * 1920),
         y: Math.floor(Math.random() * 1080),
+        vx: 0,
+        vy: 0,
+        inputX: 0,
+        inputY: 0,
         role: 'survivor',
         status: 'active'
     }

@@ -30,8 +30,26 @@ function updateState(room_code) {
             timeLeft: rooms[room_code].timeLeft,
             players: {}
         }
+
+        const ACCEL = 0.6
+        const FRICTION = 0.9
+        const MAX_SPEED = 6
+        
         for (let playerId in rooms[room_code].players) {
-            const { name, x, y, role } = rooms[room_code].players[playerId]
+            const p = rooms[room_code].players[playerId]
+
+            p.vx += p.inputX * ACCEL
+            p.vy += p.inputY * ACCEL
+            p.vx = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, p.vx))
+            p.vy = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, p.vy))
+            p.vx *= FRICTION
+            p.vy *= FRICTION
+            p.x += p.vx
+            p.y += p.vy
+            p.x = Math.max(0, Math.min(1920, p.x))
+            p.y = Math.max(0, Math.min(1080, p.y))
+
+            const { name, x, y, role } = p
             state.players[playerId] = {
                 name,
                 x,
