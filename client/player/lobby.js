@@ -1,6 +1,6 @@
 import { io } from "/node_modules/socket.io-client/dist/socket.io.esm.min.js"
 
-const socket = io("http://localhost:3000")
+const socket = io("http://172.50.20.149:3000")
 
 function showScreen(screenId){
     document.querySelectorAll(".screen").forEach(s=>{
@@ -63,19 +63,52 @@ socket.on("message_mode", (data) => {
 
 })
 
+let inputX = 0
+let inputY = 0
+
 socket.on("game_mode", () => {
     showScreen("controller_screen")
-    document.getElementById("send_input").onclick = () => {
 
-    const inputX = parseFloat(document.getElementById("input_x").value)
-    const inputY = parseFloat(document.getElementById("input_y").value)
+    requestAnimationFrame(() => {
+        const manager = nipplejs.create({
+        zone: document.getElementById("joystick_zone"),
+        mode: "static",
+        position: { left: "50%", top: "50%" },
+        color: "orange",
+        size: 180
+      })
+    
 
-    socket.emit("player_input", {
-        roomCode: sessionStorage.getItem("roomCode"),
-        playerId: localStorage.getItem("client_id"),
-        inputX,
-        inputY
+      manager.on("move", (evt, data) => {
+
+          const angle = data.angle.radian
+          const distance = Math.min(data.distance / 50, 1)
+
+          inputX = Math.cos(angle) * distance
+          inputY = Math.sin(angle) * distance
+
+          socket.emit("player_input", {
+            roomCode: sessionStorage.getItem("roomCode"),
+            playerId: localStorage.getItem("client_id"),
+            inputX,
+            inputY: -1*inputY
+          })
+
+      })
+
+      manager.on("end", () => {
+        
+          inputX = 0
+          inputY = 0
+
+          socket.emit("player_input", {
+            roomCode: sessionStorage.getItem("roomCode"),
+            playerId: localStorage.getItem("client_id"),
+            inputX,
+            inputY
+          })
+
+      })
+
     })
-
-  }
 })

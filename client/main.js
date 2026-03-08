@@ -16,7 +16,7 @@ document.getElementById("joinRoom").onclick = () => {
 
   let client_id = localStorage.getItem("client_id");
   if (!client_id) {
-    client_id = crypto.randomUUID();
+    client_id = "id-" + Math.random().toString(36).substring(2, 10)
     localStorage.setItem("client_id", client_id);
   }
 

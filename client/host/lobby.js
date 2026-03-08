@@ -1,6 +1,6 @@
 import { io } from "/node_modules/socket.io-client/dist/socket.io.esm.min.js"
 
-const socket = io("http://localhost:3000")
+const socket = io("http://172.50.20.149:3000")
 
 let game
 let playerSprites = {}
