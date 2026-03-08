@@ -19,19 +19,19 @@ function setPatientZero(room_code) {
         const randomIndex = Math.floor(Math.random() * playerIds.length)
         const randomPlayerId = playerIds[randomIndex]
         players[randomPlayerId].role = "carrier"
-        return { player_name: players[randomPlayerId].name, survivors: playerIds.length }
+        return { player_name: players[randomPlayerId].name, survivors: playerIds.length - 1 }
     }
 }
 
 function updateState(room_code) {
     if (room_code in rooms) {
-        console.log(rooms[room_code].timeLeft)
+        // console.log(rooms[room_code].timeLeft)
         let state = {
             timeLeft: rooms[room_code].timeLeft,
             players: {}
         }
 
-        const k = 2
+        const k = 3
         const ACCEL = 0.6*Math.sqrt(k)
         const FRICTION = 0.9
         const MAX_SPEED = 6*k

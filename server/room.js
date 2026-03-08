@@ -41,23 +41,47 @@ function joinRoom(io, room_code, player_id, player_name, socket_id) {
         status: 'active'
     }
     if (room_code in rooms) {
-        if (player_id in rooms[room_code].players) {
-            const sID = rooms[room_code].players[player_id].socketId
-            io.sockets.sockets.get(sID).disconnect(true)
+
+        console.log(rooms[room_code].zone)
+        
+        if (rooms[room_code].zone === "game" || rooms[room_code].zone === "message") {
+            if (player_id in rooms[room_code].players) {
+                const sID = rooms[room_code].players[player_id].socketId
+                const sock = io.sockets.sockets.get(sID)
+                if (sock) {
+                    sock.disconnect(true)
+                }
+                rooms[room_code].players[player_id] = player_info
+                console.log("Player " + player_id + " rejoined room " + room_code)
+                return "rejoined"
+            } else {
+                return "game-ongoing"
+            }
         }
-        console.log("Player " + player_id + " joined room " + room_code)
-        rooms[room_code].players[player_id] = player_info
-        return "joined"
+        
+        else {
+            if (player_id in rooms[room_code].players) {
+                const sID = rooms[room_code].players[player_id].socketId
+                const sock = io.sockets.sockets.get(sID)
+                if (sock) {
+                    sock.disconnect(true)
+                }
+            }
+            rooms[room_code].players[player_id] = player_info
+            console.log("Player " + player_id + " joined room " + room_code)
+            return "joined"
+        }
+
     } else {
         console.log("Player " + player_id + " tried to join a room that does not exist")
-        return "not_found"
+        return "not-found"
     }
 }
 
 function removePlayer(socket_id) {
     for (let roomCode in rooms) {
         for (let player_id in rooms[roomCode].players) {
-            if (rooms[roomCode].players[player_id].socketId === socket_id) {
+            if (rooms[roomCode].players[player_id].socketId === socket_id && rooms[roomCode].zone === "lobby") {
                 console.log("Player " + player_id + " removed")
                 delete rooms[roomCode].players[player_id]
                 return { player_id, roomCode }

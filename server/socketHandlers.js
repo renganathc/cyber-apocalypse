@@ -18,6 +18,11 @@ function registerSocket(io, socket) {
         if (status === "joined") {
             socket.join(roomCode)
             io.to(roomCode).emit("room_update", room.getPlayers(roomCode))
+        } else if (status === "rejoined") {
+            socket.join(roomCode)
+            socket.emit("game_mode")
+        } else if (status === "game-ongoing") {
+            io.to(socket.id).emit("game_ongoing")
         } else {
             io.to(socket.id).emit("room_not_found")
         }
