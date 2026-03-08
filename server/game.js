@@ -31,9 +31,10 @@ function updateState(room_code) {
             players: {}
         }
 
-        const ACCEL = 0.6
+        const k = 2
+        const ACCEL = 0.6*Math.sqrt(k)
         const FRICTION = 0.9
-        const MAX_SPEED = 6
+        const MAX_SPEED = 6*k
         
         for (let playerId in rooms[room_code].players) {
             const p = rooms[room_code].players[playerId]
