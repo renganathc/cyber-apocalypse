@@ -2,6 +2,39 @@ import { io } from "/node_modules/socket.io-client/dist/socket.io.esm.min.js"
 
 const socket = io("http://localhost:3000")
 
+let game
+let playerSprites = {}
+
+function startPhaser(){
+
+    const config = {
+        type: Phaser.AUTO,
+        width: 960,
+        height: 540,
+        parent: "phaser_container",
+        backgroundColor: "#1a1a1a",
+        scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH
+        },
+        scene: {
+            create,
+            update
+        }
+    }
+
+    game = new Phaser.Game(config)
+}
+
+let sceneRef
+
+function create(){
+    sceneRef = this
+}
+
+function update(){}
+
+
 function showScreen(screenId){
     document.querySelectorAll(".screen").forEach(s=>{
         s.classList.remove("active")
@@ -49,8 +82,41 @@ socket.on("message_mode", (data) => {
 
 socket.on("game_mode", () => {
     showScreen("game_screen")
+    startPhaser()
 })
 
 socket.on("game_state", (data) => {
-    console.log(data)
+
+    if(!sceneRef) return
+
+    const serverPlayers = data.players
+
+    for(const playerId in serverPlayers){
+
+        const player = serverPlayers[playerId]
+
+        if(!playerSprites[playerId]){
+
+            playerSprites[playerId] =
+                sceneRef.add.circle(player.x, player.y, 20, 0x00ff00)
+
+        }else{
+
+            playerSprites[playerId].x = player.x
+            playerSprites[playerId].y = player.y
+
+        }
+    }
+
+    for(const playerId in playerSprites){
+
+        if(!(playerId in serverPlayers)){
+
+            playerSprites[playerId].destroy()
+            delete playerSprites[playerId]
+
+        }
+
+    }
+
 })
