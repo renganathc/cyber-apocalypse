@@ -2,6 +2,14 @@ import { io } from "/node_modules/socket.io-client/dist/socket.io.esm.min.js"
 
 const socket = io("http://localhost:3000")
 
+function showScreen(screenId){
+    document.querySelectorAll(".screen").forEach(s=>{
+        s.classList.remove("active")
+    })
+
+    document.getElementById(screenId).classList.add("active")
+}
+
 socket.on("connect", () => {
     console.log("Connected at server: ", socket.id)
 
@@ -40,4 +48,34 @@ socket.on("room_not_found", () => {
 socket.on("room_destroyed", () => {
   alert("Host disconnected. Room destroyed")
   window.location.replace('../index.html')
+})
+
+socket.on("message_mode", (data) => {
+
+    showScreen("message_screen")
+
+    console.log(data)
+
+    if(data.tag === "patient-zero"){
+        document.getElementById("message_text").textContent = data.info.name + " is Patient Zero..."
+        document.getElementById("message_sub_text").textContent = "Survivors: " + data.info.survivors
+    }
+
+})
+
+socket.on("game_mode", () => {
+    showScreen("controller_screen")
+    document.getElementById("send_input").onclick = () => {
+
+    const inputX = parseFloat(document.getElementById("input_x").value)
+    const inputY = parseFloat(document.getElementById("input_y").value)
+
+    socket.emit("player_input", {
+        roomCode: sessionStorage.getItem("roomCode"),
+        playerId: localStorage.getItem("client_id"),
+        inputX,
+        inputY
+    })
+
+  }
 })

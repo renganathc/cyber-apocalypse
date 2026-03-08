@@ -9,8 +9,8 @@ function startPhaser(){
 
     const config = {
         type: Phaser.AUTO,
-        width: 960,
-        height: 540,
+        width: 1920,
+        height: 1080,
         parent: "phaser_container",
         backgroundColor: "#1a1a1a",
         scale: {
