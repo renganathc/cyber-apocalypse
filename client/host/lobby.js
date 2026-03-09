@@ -87,36 +87,58 @@ socket.on("game_mode", () => {
 
 socket.on("game_state", (data) => {
 
-    if(!sceneRef) return
+    if (!sceneRef) return
 
     const serverPlayers = data.players
 
-    for(const playerId in serverPlayers){
+    for (const playerId in serverPlayers) {
 
         const player = serverPlayers[playerId]
 
-        if(!playerSprites[playerId]){
+        const color = player.role === "carrier" ? 0xff0000 : 0x00ff00
 
-            playerSprites[playerId] =
-                sceneRef.add.circle(player.x, player.y, 20, 0x00ff00)
+        if (!playerSprites[playerId]) {
 
-        }else{
+            const circle = sceneRef.add.circle(player.x, player.y, 25, color)
 
-            playerSprites[playerId].x = player.x
-            playerSprites[playerId].y = player.y
+            const label = sceneRef.add.text(
+                player.x,
+                player.y - 50,
+                player.name,
+                {
+                    fontSize: "25px",
+                    color: "#ffffff",
+                    fontStyle: "bold"
+                }
+            ).setOrigin(0.5).setStroke("#000000", 2)
+
+            playerSprites[playerId] = { circle, label }
+
+        } else {
+
+            const obj = playerSprites[playerId]
+
+            obj.circle.x = player.x
+            obj.circle.y = player.y
+            obj.circle.fillColor = color
+
+            obj.label.x = player.x
+            obj.label.y = player.y - 50
+            obj.label.text = player.name
 
         }
     }
 
-    for(const playerId in playerSprites){
+    for (const playerId in playerSprites) {
 
-        if(!(playerId in serverPlayers)){
+        if (!(playerId in serverPlayers)) {
 
-            playerSprites[playerId].destroy()
+            playerSprites[playerId].circle.destroy()
+            playerSprites[playerId].label.destroy()
+
             delete playerSprites[playerId]
 
         }
-
     }
 
 })
