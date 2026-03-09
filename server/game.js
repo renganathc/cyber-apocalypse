@@ -13,13 +13,14 @@ function setPatientZero(room_code) {
     if (room_code in rooms) {
         const players = rooms[room_code].players
         const playerIds = Object.keys(players)
-        if (playerIds.length === 0) {
+        if (playerIds.length === 0) { // debug purposes only.. later ill change to 1
             return undefined
         }
+        rooms[room_code].survivors = playerIds.length - 1
         const randomIndex = Math.floor(Math.random() * playerIds.length)
         const randomPlayerId = playerIds[randomIndex]
         players[randomPlayerId].role = "carrier"
-        return { player_name: players[randomPlayerId].name, survivors: playerIds.length - 1 }
+        return { player_name: players[randomPlayerId].name, survivors: rooms[room_code].survivors }
     }
 }
 
@@ -67,4 +68,53 @@ function updateState(room_code) {
     }
 }
 
-module.exports = { switchZone, setPatientZero, updateState }
+function handleInfections(io, room_code, dist) {
+    if (room_code in rooms) {
+        const carriers = []
+        const survivors = []
+        for (let playerId in rooms[room_code].players) {
+            if (rooms[room_code].players[playerId].role === "carrier") carriers.push(playerId)
+            else survivors.push(playerId)
+        }
+
+        const dis2 = dist**2
+
+        for (let carrier of carriers)  {
+            for (let survivor of survivors) {
+                const cx = rooms[room_code].players[carrier].x
+                const cy = rooms[room_code].players[carrier].y
+                const sx = rooms[room_code].players[survivor].x
+                const sy = rooms[room_code].players[survivor].y
+
+                if ((cx - sx)**2 + (cy - sy)**2 <= dis2) {
+
+                    for (let playerId in rooms[room_code].players) {
+                        rooms[room_code].players[playerId].vx = 0
+                        rooms[room_code].players[playerId].vy = 0
+                        rooms[room_code].players[playerId].inputX = 0
+                        rooms[room_code].players[playerId].inputY = 0
+                    }
+
+                    rooms[room_code].players[survivor].role = "carrier"
+                    rooms[room_code].survivors--
+                    rooms[room_code].zone = "message"
+                    io.to(room_code).emit("message_mode", {tag: "infected", info: {carrier: rooms[room_code].players[carrier].name, infected: rooms[room_code].players[survivor].name, survivors: rooms[room_code].survivors}})
+
+                    setTimeout(() => {
+                        if (!(room_code in rooms)) return false
+                        rooms[room_code].timeLeft += 2
+                        rooms[room_code].frame -= 10
+                        rooms[room_code].zone = "game"
+                        io.to(room_code).emit("game_mode")
+                    }, 2000)
+
+                    return true
+                }
+
+            }
+        }
+    }
+    return false
+}
+
+module.exports = { switchZone, setPatientZero, updateState, handleInfections }

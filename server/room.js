@@ -18,6 +18,7 @@ function createRoom(host_id) {
         host: host_id,
         zone: 'lobby',
         players: {},
+        survivors: 0,
         timeLeft: 120,
         frame: 0
     }

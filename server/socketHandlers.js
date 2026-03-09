@@ -68,14 +68,18 @@ function registerSocket(io, socket) {
                             clearInterval(interval)
                             return
                         }
-                        if (state.timeLeft === 0) {
+                        if (state.timeLeft <= 0) {
                             game.switchZone(room_code, "game_over")
                             clearInterval(interval)
                             return
-                        } else {
-                            io.to(room_code).emit("game_state", state)
-                            // need to modify later to send only to host
                         }
+
+                        const inf_result = game.handleInfections(io, room_code, 52)
+                        if (inf_result === true) {
+                            return
+                        }
+                        io.to(room_code).emit("game_state", state) // need to modify later to send only to host
+                        
                     }, TICK_RATE)
 
 
