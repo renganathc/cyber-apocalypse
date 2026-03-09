@@ -64,6 +64,9 @@ socket.on("message_mode", (data) => {
     if(data.tag === "patient-zero"){
         document.getElementById("message_text").textContent = data.info.name + " is Patient Zero..."
         document.getElementById("message_sub_text").textContent = "Survivors: " + data.info.survivors
+    } else if(data.tag === "infected") {
+        document.getElementById("message_text").textContent = data.info.infected + " was Infected by " + data.info.carrier
+        document.getElementById("message_sub_text").textContent = "Survivors: " + data.info.survivors
     }
 
 })
@@ -116,4 +119,8 @@ socket.on("game_mode", () => {
       })
 
     })
+})
+
+socket.on("game_over_mode", () => {
+    window.location.replace('../index.html')
 })

@@ -145,3 +145,7 @@ socket.on("game_state", (data) => {
     }
 
 })
+
+socket.on("game_over_mode", () => {
+    showScreen("results_screen")
+})

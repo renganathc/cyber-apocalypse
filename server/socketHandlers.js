@@ -57,7 +57,7 @@ function registerSocket(io, socket) {
 
                     const TICK_RATE = 50
                     const interval = setInterval(() => {
-                        if (!(room_code in room.rooms)) {
+                        if (!(room_code in room.rooms) || room.rooms[room_code].zone === "game_over") {
                             clearInterval(interval)
                             return
                         }
@@ -70,6 +70,7 @@ function registerSocket(io, socket) {
                         }
                         if (state.timeLeft <= 0) {
                             game.switchZone(room_code, "game_over")
+                            io.to(room_code).emit("game_over_mode")
                             clearInterval(interval)
                             return
                         }

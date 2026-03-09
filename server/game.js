@@ -13,7 +13,7 @@ function setPatientZero(room_code) {
     if (room_code in rooms) {
         const players = rooms[room_code].players
         const playerIds = Object.keys(players)
-        if (playerIds.length === 0) { // debug purposes only.. later ill change to 1
+        if (playerIds.length < 2) {
             return undefined
         }
         rooms[room_code].survivors = playerIds.length - 1
@@ -104,8 +104,13 @@ function handleInfections(io, room_code, dist) {
                         if (!(room_code in rooms)) return false
                         rooms[room_code].timeLeft += 2
                         rooms[room_code].frame -= 10
-                        rooms[room_code].zone = "game"
-                        io.to(room_code).emit("game_mode")
+                        if (rooms[room_code].survivors > 0) {
+                            rooms[room_code].zone = "game"
+                            io.to(room_code).emit("game_mode")
+                        } else {
+                            rooms[room_code].zone = "game_over"
+                            io.to(room_code).emit("game_over_mode")
+                        }
                     }, 2000)
 
                     return true
