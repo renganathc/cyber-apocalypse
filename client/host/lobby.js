@@ -146,6 +146,25 @@ socket.on("game_state", (data) => {
 
 })
 
-socket.on("game_over_mode", () => {
+socket.on("game_over_mode", ({ roomInfo }) => {
     showScreen("results_screen")
+    console.log(roomInfo)
+    const sortedPlayers = Object.values(roomInfo.players)
+            .filter((p) => p.carrier_pos !== -1)
+            .sort((a, b) => b.carrier_pos - a.carrier_pos)
+
+    const survivors = Object.values(roomInfo.players)
+            .filter((p) => p.carrier_pos === -1)
+
+    for (const player of survivors) {
+        const element = document.createElement("li")
+        element.textContent = "Survivor - " + player.name
+        document.getElementById("player_ranks").appendChild(element)
+    }
+
+    for (const player of sortedPlayers) {
+        const element = document.createElement("li")
+        element.textContent = (Object.keys(roomInfo.players).length - player.carrier_pos) + " - " + player.name
+        document.getElementById("player_ranks").appendChild(element)
+    }
 })
