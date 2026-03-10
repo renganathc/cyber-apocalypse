@@ -70,7 +70,8 @@ function registerSocket(io, socket) {
                         }
                         if (state.timeLeft <= 0) {
                             game.switchZone(room_code, "game_over")
-                            io.to(room_code).emit("game_over_mode")
+                            io.to(room_code).emit("game_over_mode", {roomInfo: room.rooms[room_code]})
+                            console.log("Room " + room_code + " finished game")
                             clearInterval(interval)
                             return
                         }

@@ -20,6 +20,7 @@ function setPatientZero(room_code) {
         const randomIndex = Math.floor(Math.random() * playerIds.length)
         const randomPlayerId = playerIds[randomIndex]
         players[randomPlayerId].role = "carrier"
+        rooms[room_code].players[randomPlayerId].carrier_pos = 0
         return { player_name: players[randomPlayerId].name, survivors: rooms[room_code].survivors }
     }
 }
@@ -96,6 +97,7 @@ function handleInfections(io, room_code, dist) {
                     }
 
                     rooms[room_code].players[survivor].role = "carrier"
+                    rooms[room_code].players[survivor].carrier_pos = Object.keys(rooms[room_code].players).length - rooms[room_code].survivors
                     rooms[room_code].survivors--
                     rooms[room_code].zone = "message"
                     io.to(room_code).emit("message_mode", {tag: "infected", info: {carrier: rooms[room_code].players[carrier].name, infected: rooms[room_code].players[survivor].name, survivors: rooms[room_code].survivors}})
@@ -109,7 +111,8 @@ function handleInfections(io, room_code, dist) {
                             io.to(room_code).emit("game_mode")
                         } else {
                             rooms[room_code].zone = "game_over"
-                            io.to(room_code).emit("game_over_mode")
+                            io.to(room_code).emit("game_over_mode", {roomInfo: rooms[room_code]})
+                            console.log("Room " + room_code + " finished game")
                         }
                     }, 2000)
 

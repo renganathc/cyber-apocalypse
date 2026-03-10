@@ -39,7 +39,7 @@ function joinRoom(io, room_code, player_id, player_name, socket_id) {
         inputX: 0,
         inputY: 0,
         role: 'survivor',
-        status: 'active'
+        carrier_pos: -1
     }
     if (room_code in rooms) {
 
