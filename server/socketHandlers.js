@@ -111,8 +111,8 @@ function registerSocket(io, socket) {
                     update_per_sec = 0
                 }
 
-                room.rooms[roomCode].players[playerId].inputX = inputX
-                room.rooms[roomCode].players[playerId].inputY = inputY
+                room.rooms[roomCode].players[playerId].inputX = Math.max(-1, Math.min(1, inputX))
+                room.rooms[roomCode].players[playerId].inputY = Math.max(-1, Math.min(1, inputY))
             }
         }
     })
