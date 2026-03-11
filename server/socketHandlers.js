@@ -94,9 +94,23 @@ function registerSocket(io, socket) {
         }
     })
 
+    let update_per_sec = 0
+    let time = undefined
+
     socket.on("player_input", ({ roomCode, playerId, inputX, inputY }) => {
         if (roomCode in room.rooms) {
             if (playerId in room.rooms[roomCode].players) {
+
+                if (time === undefined) {
+                    time = Date.now()
+                }
+                update_per_sec++
+                if (Date.now() - time >= 1000) {
+                    console.log("Input updates per second: " + update_per_sec)
+                    time = Date.now()
+                    update_per_sec = 0
+                }
+
                 room.rooms[roomCode].players[playerId].inputX = inputX
                 room.rooms[roomCode].players[playerId].inputY = inputY
             }
