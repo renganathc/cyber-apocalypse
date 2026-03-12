@@ -1,14 +1,41 @@
 rooms = {}
 
+const buildings = [
+  { x: 264, y: 172, width: 359, height: 343 },
+  { x: 1103, y: 329, width: 360, height: 524 }
+]
+
 function generateCode() {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     let code = ""
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 5; i++) {
         code += chars[Math.floor(Math.random() * chars.length)]
     }
 
     return code
+}
+
+function insideBuilding(x, y, rad){
+  for(const b of buildings){
+    if(x > b.x - rad && x < b.x + b.width + rad && y > b.y - rad && y < b.y + b.height + rad) {
+      return true
+    }
+  }
+  return false
+}
+
+function randomSpawn(){
+
+  let x, y
+
+  do {
+    x = Math.floor(Math.random() * 1920)
+    y = Math.floor(Math.random() * 1080)
+  } while(insideBuilding(x,y, 25))
+
+  return { x, y }
+
 }
 
 function createRoom(host_id) {
@@ -29,11 +56,12 @@ function createRoom(host_id) {
 }
 
 function joinRoom(io, room_code, player_id, player_name, socket_id) {
+    pos = randomSpawn()
     const player_info = {
         name: player_name,
         socketId : socket_id,
-        x: Math.floor(Math.random() * 1920),
-        y: Math.floor(Math.random() * 1080),
+        x: pos.x,
+        y: pos.y,
         vx: 0,
         vy: 0,
         inputX: 0,

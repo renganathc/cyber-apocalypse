@@ -1,4 +1,20 @@
 const { rooms } = require('./room')
+const SCR_WIDTH = 1752
+const SCR_HEIGHT = 1012
+
+const buildings = [
+  { x: 264, y: 172, width: 359, height: 343 },
+  { x: 1103, y: 329, width: 360, height: 524 }
+]
+
+function collidesWithBuilding(x, y, radius = 25) {
+  for (const b of buildings) {
+    if (x + radius > b.x && x - radius < b.x + b.width && y + radius > b.y && y - radius < b.y + b.height) {
+      return true
+    }
+  }
+  return false
+}
 
 function switchZone(room_code, zone) {
     if (room_code in rooms) {
@@ -27,7 +43,6 @@ function setPatientZero(room_code) {
 
 function updateState(room_code) {
     if (room_code in rooms) {
-        // console.log(rooms[room_code].timeLeft)
         let state = {
             timeLeft: rooms[room_code].timeLeft,
             players: {}
@@ -47,10 +62,19 @@ function updateState(room_code) {
             p.vy = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, p.vy))
             p.vx *= FRICTION
             p.vy *= FRICTION
-            p.x += p.vx
-            p.y += p.vy
-            p.x = Math.max(0, Math.min(1920, p.x))
-            p.y = Math.max(0, Math.min(1080, p.y))
+            const newX = p.x + p.vx
+            const newY = p.y + p.vy
+
+            if (!collidesWithBuilding(newX, p.y)) {
+                p.x = newX
+            }
+
+            if (!collidesWithBuilding(p.x, newY)) {
+                p.y = newY
+            }
+
+            p.x = Math.max(0, Math.min(SCR_WIDTH, p.x))
+            p.y = Math.max(0, Math.min(SCR_HEIGHT, p.y))
 
             const { name, x, y, role } = p
             state.players[playerId] = {
