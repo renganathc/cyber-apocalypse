@@ -1,64 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Player Lobby</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-    body{
-        margin:0;
-        font-family: Arial, Helvetica, sans-serif;
-    }
+<title>Player Lobby</title>
 
-    .screen{
-        display:none;
-        width:100vw;
-        height:100vh;
-    }
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
-    .active{
-        display:flex;
-        flex-direction:column;
-        justify-content:center;
-        align-items:center;
-    }
+<style>
 
-    #message_text{
-        font-size:40px;
-        font-weight:bold;
-        text-align:center;
-    }
-    </style>
+body{
+margin:0;
+background:black;
+font-family:'Press Start 2P', monospace;
+color:white;
+overflow:hidden;
+}
+
+#background_particles{
+position:absolute;
+width:100%;
+height:100%;
+z-index:-1;
+overflow:hidden;
+}
+
+.particle{
+position:absolute;
+background:#84ff00;
+border-radius:50%;
+opacity:0.25;
+animation: drift linear infinite;
+}
+
+@keyframes drift{
+from{ transform:translateY(0); }
+to{ transform:translateY(-120vh); }
+}
+
+.screen{
+display:none;
+width:100vw;
+height:100vh;
+padding:20px;
+box-sizing:border-box;
+}
+
+.active{
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+}
+
+#room_code{
+font-size:28px;
+color:#84ff00;
+text-shadow:0 0 10px #84ff00;
+margin-bottom:30px;
+}
+
+#players{
+list-style:none;
+padding:0;
+margin:0;
+}
+
+#players li{
+margin:8px 0;
+color:#baff4a;
+}
+
+#message_text{
+font-size:28px;
+color:#84ff00;
+text-shadow:0 0 12px #84ff00;
+}
+
+#message_sub_text{
+margin-top:20px;
+font-size:18px;
+opacity:0.85;
+}
+
+#controller_screen{
+justify-content:center;
+align-items:center;
+}
+
+#joystick_zone{
+width:100%;
+height:100%;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+</style>
 
 </head>
+
 <body>
 
-    <div id="lobby_screen" class="screen active">
-        <h2 id="room_code">Room Code: ------</h2>
-        <p id="players">Players: ------</p>
-    </div>
+<div id="background_particles"></div>
+
+<div id="lobby_screen" class="screen active">
+
+<h2 id="room_code">Waiting for host to begin...</h2>
+
+<ul id="players"></ul>
+
+</div>
 
 
-    <div id="message_screen" class="screen">
-        <div id="message_text">Waiting...</div>
-        <div id="message_sub_text">Waiting...</div>
-    </div>
+<div id="message_screen" class="screen">
+
+<div id="message_text">Waiting...</div>
+
+<div id="message_sub_text">Waiting...</div>
+
+</div>
 
 
-    <div id="controller_screen" class="screen">
+<div id="controller_screen" class="screen">
 
-        <div id="joystick_zone" style="
-            width:100%;
-            height:100vh;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-        "></div>
+<div id="joystick_zone"></div>
 
-    </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/nipplejs@0.10.1/dist/nipplejs.min.js"></script>
-    <script type="module" src="./lobby.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/nipplejs@0.10.1/dist/nipplejs.min.js"></script>
+<script type="module" src="./lobby.js"></script>
+
+<script>
+
+const bg = document.getElementById("background_particles")
+
+for(let i=0;i<40;i++){
+
+const p=document.createElement("div")
+
+p.className="particle"
+
+const size=Math.random()*4
+
+p.style.width=size+"px"
+p.style.height=size+"px"
+
+p.style.left=Math.random()*100+"%"
+p.style.top=Math.random()*100+"%"
+
+p.style.animationDuration=(15+Math.random()*15)+"s"
+
+bg.appendChild(p)
+
+}
+
+</script>
+
 </body>
 </html>

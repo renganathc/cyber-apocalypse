@@ -1,6 +1,7 @@
 import { io } from "/node_modules/socket.io-client/dist/socket.io.esm.min.js"
 
-const socket = io("http://172.50.20.149:3000")
+//const socket = io("http://172.50.20.149:3000")
+const socket = io("http://192.168.54.153:3000")
 
 function showScreen(screenId){
     document.querySelectorAll(".screen").forEach(s=>{
@@ -37,7 +38,25 @@ socket.on("disconnect", () => {
 
 socket.on("room_update", (room_data) => {
   console.log("players in room...\n", room_data)
-  document.getElementById("players").textContent = JSON.stringify(room_data)
+  socket.on("room_update", (room_data) => {
+
+  const list = document.getElementById("players")
+
+  list.innerHTML = ""
+
+  for (const playerId in room_data.players) {
+
+    const player = room_data.players[playerId]
+
+    const li = document.createElement("li")
+
+    li.textContent = player.name
+
+    list.appendChild(li)
+
+  }
+
+})
 })
 
 socket.on("room_not_found", () => {
@@ -56,6 +75,17 @@ socket.on("room_destroyed", () => {
 })
 
 socket.on("message_mode", (data) => {
+
+    const text = document.getElementById("message_text")
+
+    text.style.transform="scale(0.6)"
+    text.style.opacity="0"
+
+    setTimeout(()=>{
+    text.style.transition="all .4s ease"
+    text.style.transform="scale(1)"
+    text.style.opacity="1"
+    },50)
 
     showScreen("message_screen")
 
