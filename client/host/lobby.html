@@ -3,40 +3,181 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Host Lobby</title>
+<title>LAN Apocalypse - Host</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
 <style>
-    body{
-        margin:0;
-        font-family: Arial, Helvetica, sans-serif;
-    }
 
-    .screen{
-        display:none;
-        width:100vw;
-        height:100vh;
-    }
+body{
+    margin:0;
+    background:black;
+    font-family:'Press Start 2P', monospace;
+    color:white;
+    overflow:hidden;
+}
 
-    .active{
-        display:flex;
-        flex-direction:column;
-        justify-content:center;
-        align-items:center;
-    }
+#background_particles{
+    position:absolute;
+    width:100%;
+    height:100%;
+    z-index:-1;
+    overflow:hidden;
+}
 
-    #message_text{
-        font-size:40px;
-        font-weight:bold;
-        text-align:center;
+.particle{
+    position:absolute;
+    background:#84ff00;
+    border-radius:50%;
+    opacity:0.25;
+    animation: drift linear infinite;
+}
+
+@keyframes drift{
+    from{
+        transform:translateY(0);
     }
+    to{
+        transform:translateY(-120vh);
+    }
+}
+
+.screen{
+    display:none;
+    width:100vw;
+    height:100vh;
+}
+
+.active{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+}
+
+#room_code{
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size:76px;
+    color:#84ff00;
+    text-shadow:
+    0 0 10px #84ff00,
+    0 0 25px rgba(132,255,0,0.6);
+}
+
+#players{
+    margin-top:25px;
+    opacity:0.8;
+}
+
+button{
+    font-family:'Press Start 2P';
+    padding:16px 28px;
+    background:#111;
+    border:2px solid #84ff00;
+    color:#84ff00;
+    cursor:pointer;
+    border-radius:8px;
+    margin-top:30px;
+    transition:.2s;
+}
+
+button:hover{
+transform:scale(1.05);
+box-shadow:0 0 12px #84ff00;
+}
+
+#message_text{
+    font-size:60px;
+    color:#84ff00;
+    text-shadow:
+    0 0 15px #84ff00,
+    0 0 40px rgba(132,255,0,0.6);
+    text-align:center;
+}
+
+#message_sub_text{
+    margin-top:30px;
+    font-size:28px;
+    opacity:0.8;
+}
+
+#phaser_container{
+    width:100%;
+    height:100%;
+}
+
+#text{
+    font-size:60px;
+    color:#84ff00;
+    text-shadow:0 0 25px #84ff00;
+    margin-bottom:50px;
+}
+
+#player_ranks{
+    list-style:none;
+    font-size:30px;
+    padding:0;
+}
+
+#player_ranks li{
+    margin:12px;
+}
+
+#game_ui{
+    position:absolute;
+    top:20px;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    pointer-events:none;
+}
+
+#game_timer{
+    font-size:40px;
+    color:#84ff00;
+
+    text-shadow:
+    0 0 10px #84ff00,
+    0 0 25px rgba(132,255,0,0.8);
+}
+
+#players{
+    list-style:none;
+    padding:0;
+    margin-top:25px;
+}
+
+#players li{
+    margin:8px 0;
+    font-size:24px;
+}
+#player_ranks{
+    list-style:none;
+    font-size:30px;
+    padding:0;
+    margin:0;
+    text-align:center;
+}
+
+#player_ranks li{
+    margin:12px 0;
+    color:#ff4444;
+
+    text-shadow:
+    0 0 6px #ff444483,
+    0 0 14px rgba(255,68,68,0.7);
+}
+
 </style>
 
 </head>
+
 <body>
+<div id="background_particles"></div>
 
 <div id="lobby_screen" class="screen active">
     <h2 id="room_code">Room Code: ------</h2>
-    <p id="players">Players: ------</p>
+    <p style="font-size: 24px;">Players Joined:</p>
+    <ul id="players"></ul>
     <button id="start_game">Start Game</button>
 </div>
 
@@ -48,7 +189,13 @@
 
 
 <div id="game_screen" class="screen">
+
+    <div id="game_ui">
+        <div id="game_timer">2:00</div>
+    </div>
+
     <div id="phaser_container"></div>
+
 </div>
 
 <div id="results_screen" class="screen">

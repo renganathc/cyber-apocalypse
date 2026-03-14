@@ -1,16 +1,22 @@
 import { io } from "/node_modules/socket.io-client/dist/socket.io.esm.min.js"
 
-const socket = io("http://172.50.20.149:3000")
+//const socket = io("http://172.50.20.149:3000")
+const socket = io("http://192.168.54.153:3000")
 
 let game
 let playerSprites = {}
+
+const buildings = [
+  { x: 264, y: 172, width: 359, height: 343 },
+  { x: 1103, y: 329, width: 360, height: 524 }
+]
 
 function startPhaser(){
 
     const config = {
         type: Phaser.AUTO,
-        width: 1920,
-        height: 1080,
+        width: 1752,
+        height: 1012,
         parent: "phaser_container",
         backgroundColor: "#1a1a1a",
         scale: {
@@ -18,8 +24,8 @@ function startPhaser(){
             autoCenter: Phaser.Scale.CENTER_BOTH
         },
         scene: {
-            create,
-            update
+            preload,
+            create
         }
     }
 
@@ -28,12 +34,23 @@ function startPhaser(){
 
 let sceneRef
 
-function create(){
-    sceneRef = this
+function preload(){
+    this.load.image("map", "./assets/city_map.png")
+    this.load.image("buil1", "./assets/buil_1.png")
+    this.load.image("buil2", "./assets/buil_2.png")
 }
 
-function update(){}
+function create(){
+    sceneRef = this
+    
+    const buil1 = this.add.image(buildings[0].x + buildings[0].width/2, buildings[0].y + buildings[0].height/2, "buil1")
+    const buil2 = this.add.image(buildings[1].x + buildings[1].width/2, buildings[1].y + buildings[1].height/2, "buil2")
 
+    buil1.setDepth(-1)
+    buil2.setDepth(-1)
+    buil1.setDisplaySize(buildings[0].width, buildings[0].height)
+    buil2.setDisplaySize(buildings[1].width, buildings[1].height)
+}
 
 function showScreen(screenId){
     document.querySelectorAll(".screen").forEach(s=>{
@@ -45,7 +62,6 @@ function showScreen(screenId){
 
 socket.on("connect", () => {
     console.log("Connected at server: ", socket.id)
-
     socket.emit("create_room", {host_id: socket.id})
 })
 
@@ -64,7 +80,18 @@ socket.on("room_created", (data) => {
 
 socket.on("room_update", (room_data) => {
     console.log("players in room...\n", room_data)
-    document.getElementById("players").textContent = JSON.stringify(room_data)
+    
+    const playerList = document.getElementById("players")
+
+    playerList.innerHTML = ""
+
+    for (const playerId in room_data.players) {
+
+        const player = room_data.players[playerId]
+        const li = document.createElement("li")
+        li.textContent = player.name
+        playerList.appendChild(li)
+    }
 })
 
 socket.on("message_mode", (data) => {
@@ -92,18 +119,24 @@ socket.on("game_state", (data) => {
 
     if (!sceneRef) return
 
+    const remainingTime = data.timeLeft
+
+    const minutes = Math.floor(remainingTime / 60)
+    const seconds = remainingTime % 60
+
+    document.getElementById("game_timer").textContent =
+        minutes + ":" + seconds.toString().padStart(2,"0")
+
     const serverPlayers = data.players
 
     for (const playerId in serverPlayers) {
 
         const player = serverPlayers[playerId]
-
         const color = player.role === "carrier" ? 0xff0000 : 0x00ff00
 
         if (!playerSprites[playerId]) {
-
+            
             const circle = sceneRef.add.circle(player.x, player.y, 25, color)
-
             const label = sceneRef.add.text(
                 player.x,
                 player.y - 50,
@@ -114,7 +147,6 @@ socket.on("game_state", (data) => {
                     fontStyle: "bold"
                 }
             ).setOrigin(0.5).setStroke("#000000", 2)
-
             playerSprites[playerId] = { circle, label }
 
         } else {
