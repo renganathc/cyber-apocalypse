@@ -48,13 +48,18 @@ function updateState(room_code) {
             players: {}
         }
 
-        const k = 3
-        const ACCEL = 0.6*Math.sqrt(k)
-        const FRICTION = 0.9
-        const MAX_SPEED = 6*k
         
         for (let playerId in rooms[room_code].players) {
             const p = rooms[room_code].players[playerId]
+            let k = 3
+
+            if (rooms[room_code].players[playerId].role === "carrier" && rooms[room_code].survivors === Object.keys(rooms[room_code].players).length - 1) {
+                k = 4.5
+            }
+
+            const ACCEL = 0.6*Math.sqrt(k)
+            const FRICTION = 0.9
+            const MAX_SPEED = 6*k
 
             p.vx += p.inputX * ACCEL
             p.vy += p.inputY * ACCEL
