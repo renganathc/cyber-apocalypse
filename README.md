@@ -10,7 +10,21 @@
 
 > A server-authoritative real-time multiplayer game where players move in a shared arena and an infection propagates dynamically until time expires or all players are infected.
 
+> ### **Live Deployment (Web App):** https://cyber-apocalypse.vercel.app/
+
 ---
+
+Room Creation and Joining:
+
+https://github.com/user-attachments/assets/3a5340fa-6599-4264-aede-2a35ff712595
+
+Gameplay Video:
+
+https://github.com/user-attachments/assets/77975570-4e91-445d-9894-cb24dcb5b74d
+
+Results screen:
+
+<img width="1842" height="960" alt="Image" src="https://github.com/user-attachments/assets/b1ad9754-ed84-4fba-a49c-5c1bdfc3a769" />
 
 ## 🖥️ Tech Stack
 
