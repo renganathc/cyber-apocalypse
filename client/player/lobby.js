@@ -1,7 +1,7 @@
 import { io } from "/node_modules/socket.io-client/dist/socket.io.esm.min.js"
+import { BACKEND_URL } from "../config.js"
 
-//const socket = io("http://172.50.20.149:3000")
-const socket = io("http://192.168.54.153:3000")
+const socket = io(BACKEND_URL)
 
 function showScreen(screenId){
     document.querySelectorAll(".screen").forEach(s=>{
