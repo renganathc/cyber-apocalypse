@@ -1,1 +1,1 @@
-export const BACKEND_URL = "http://172.180.31.38:3000";
+export const BACKEND_URL = "https://cyber-apocalypse.onrender.com";
